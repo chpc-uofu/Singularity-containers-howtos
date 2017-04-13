@@ -60,7 +60,14 @@ To test the installation, use the `%test` section to put there commands that run
     su -c 'brew install freetype --build-from-source' brewuser
 ```
 See [our bioBakery def file]() for full definition file that shows this.
-
+- if any of the bootstrap commands exits with non-zero status, container build will terminate. While this is good to catch build issues, sometimes we want to ignore known errors. The simplest way to set exit status to zero is to pipe it to `true`, e.g. to overcome a known LinuxBrew error where the first update fails:
+```
+/opt/linuxbrew/bin/brew update || true ; /opt/linuxbrew/bin/brew update 
+```
+If we want to return the result of the command in case of zero exit status, but catch the non-zero exit status, wrap it in a condition, e.g. in the example below, if there's no `proxy` in `env`, the `env | grep proxy` will have non-zero exit status:
+```
+if env | grep -q proxy; then env | grep proxy; fi
+```
 
 ### A few caveats that I found
 - `%test` section does not seem to bring environment from /environment created in `%post` section, so, make sure to define PATH and LD_LIBRARY_PATH in the `%test` section before running tests.
