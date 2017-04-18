@@ -70,7 +70,7 @@ Once we have our container files together, and the container builds OK, we can i
 #### To selectively add initial files:
 `ls -1 > files`
 vi files to edit
-`git add ``cat files`` `
+`git add `cat files` `
 
 #### Modifying a container repo
 ```
