@@ -22,27 +22,32 @@ Once we have our container files together, and the container builds OK, we can i
 
 1. Create a local repository. 
  - make sure that there's only one container per repository
- - use `.gitignore` from existing repos as a start for local `.gitignore` - at the very least include there `*.img` to ignore the container image files
+ - use .gitignore from existing repos as a start for local .gitignore - at the very least include there *.img to ignore the container image files
  - then run the following commands:
- ```
- git init
- git add .
- git commit -m "initial commit"
-```
+ -- git init
+ -- git add .
+ -- git commit -m "initial commit"
+
 2. Create a remote GitHub repository and put the local repo to it
  - go to github.com, select CHPC-UofU as organization, create new repo under this organization (can't figure out how to do this via a command line)
  - run the following commands
- ```
- git remote add origin https://USER@github.com/CHPC-UofU/Singularity-REPO.git
- git push -u origin master
- ```
+ -- git remote add origin https://USER@github.com/CHPC-UofU/Singularity-REPO.git
  - USER is your GitHub user name, Singularity-REPO.git is the repo name
 
+3. Create gitlab repository and add it to your local repos
+ - go to gitlab.chpc.utah.edu, go to Singularity group, and there create a new repo.
+ - add gitlab remote to the local repo 
+ -- git remote set-url --add origin git@gitlab.chpc.utah.edu:Singularity/Singularity-REPO.git
+ - USER is your gitlab user name, Singularity-REPO.git is the repo name
+
+4. Push the image 
+ -- git push -u origin master
+
 3. Mirror this repo to CHPC GitLab
- - select *Singularity* group and and in this group create a new project
+ - select "Singularity" group and and in this group create a new project
  - choose to import, 
  - at first time, it'll ask for token to access github - generate it and paste to the gitlab page
  - select the appropriate repo from github to import
- - make sure in the *To GitLab* column, *Singularity* is selected (default is your uNID), then hit Import
+ - make sure in the "To GitLab" column, "Singularity" is selected (default is your uNID), then hit Import
 
 
