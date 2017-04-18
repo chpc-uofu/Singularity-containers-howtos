@@ -44,8 +44,6 @@ Once we have our container files together, and the container builds OK, we can i
  -- git push -u origin master
 
 3. Mirror this repo to CHPC GitLab
- - log in to gitlab.chpc.utah.edu with your uNID and campus password
- - if haven't already, set up SSH keys on gitlab
  - select "Singularity" group and and in this group create a new project
  - choose to import, 
  - at first time, it'll ask for token to access github - generate it and paste to the gitlab page
