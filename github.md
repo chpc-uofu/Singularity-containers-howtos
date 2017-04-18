@@ -8,6 +8,8 @@ Each container will thus have its own repository on GitHub's *CHPC-UofU* organiz
 
 ### GIT setup
 
+We need to have accounts on GitHub and CHPC's GitLab and enable SSH keys to both servers for passwordless interaction.
+
 #### GitHub
 - create github.com account if you don't have one by navigating web browser to github.com
 - e-mail Martin to be added to the *CHPC-UofU* organization
@@ -15,14 +17,15 @@ Each container will thus have its own repository on GitHub's *CHPC-UofU* organiz
 
 #### GitLab
 - open gitlab.chpc.utah.edu in your web browser and authenticate with uNID
-- create SSH keys by going to your user settings (pulldown menu accessed via use icon in the upper right corner), then choosing *SSH k=Keys* and following the instructions.
+- create SSH keys by going to your user settings (pulldown menu accessed via use icon in the upper right corner), then choosing *SSH Keys* and following the instructions.
 
 ### Files in container repository
 
 #### Each container repo should at least contain:
-- the container definition file - `Singularity.def`. The name, `Singularity.def`, is mandatory, as it allows for integration with [Singularity Hub](https://singularity-hub.org/).
+- the container definition file - `Singularity`. The name, `Singularity`, is mandatory, as it allows for integration with [Singularity Hub](https://singularity-hub.org/).
 - shell script that runs the Singularity commands to build the container - usually just two lines, first creating the container of a given size, and second which does the bootstrap
-- readme.md - which describes what is this container for, tips/tricks in container setup and useful external files/links and 
+- `readme.md` - which describes what is this container for, tips/tricks in container setup and useful external files/links and 
+- `.gitignore` - at the very least include there *.img to ignore the container image files
 
 #### Optional files include
 - LMod module for the container
@@ -33,8 +36,7 @@ Once we have our container files together, and the container builds OK, we can i
 
 1. Create a local repository. 
  - make sure that there's only one container per repository
- - use `.gitignore` from existing repos as a start for local .gitignore - at the very least include there *.img to ignore the container image files
- - for integration with Singularity Hub, name the container definition file `Singularity`
+ - use `.gitignore` from existing repos as a start for local .gitignore
  - then run the following commands:
 ```
  git init
@@ -43,15 +45,14 @@ Once we have our container files together, and the container builds OK, we can i
 ```
 
 2. Create a remote GitHub repository and put the local repo to it
- - go to github.com, select CHPC-UofU as organization, create new repo under this organization (can't figure out how to do this via a command line)
+ - go to github.com, select *CHPC-UofU* as organization, create new repo under this organization (can't figure out how to do this via a command line)
  - run the following command:
 ```
- git remote add origin https://USER@github.com/CHPC-UofU/Singularity-REPO.git
+ git remote add origin git@github.com:CHPC-UofU/Singularity-REPO.git
 ```
  - Singularity-REPO.git is the repo name
 
 3. Create GitLab repository and add it to the local repo
- - if haven't already, set up SSH keys on gitlab
  - go to gitlab.chpc.utah.edu, go to Singularity group, and there create a new repo.
  - add gitlab remote to the local repo 
 ```
@@ -59,19 +60,17 @@ Once we have our container files together, and the container builds OK, we can i
 ```
  - Singularity-REPO.git is the repo name
 
-3. Push the image 
+4. Push the image 
 ```
  git push -u origin master
 ```
-
-
 
 ### Some tips/tricks
 
 #### To selectively add initial files:
 `ls -1 > files`
 vi files to edit
-`git add \`cat files\``
+`git add ``cat files`` `
 
 #### Modifying a container repo
 ```
@@ -84,8 +83,7 @@ mv Singularity.def Singularity
 git rm --cached Singularity.def
 
 git remote set-url --add origin  git@gitlab.chpc.utah.edu:Singularity/Singularity-tensorflow.git
-git add .
-git commit -m "add gitlab"
+git commit -a -m "add gitlab"
 git push -u origin master
 ```
 
