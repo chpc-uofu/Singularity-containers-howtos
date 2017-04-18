@@ -1,10 +1,21 @@
 # CHPC's Singularity files on Github and local Gitlab
 
-Public GitHub CHPC's organization page is named *CHPC-UofU*. It is owned by Martin, e-mail him to get invited to it. This is a primary location for CHPC public facing files, including the container definitions.
+Public GitHub CHPC's organization page is named *CHPC-UofU*. This is a primary location for CHPC public facing files, including the container definitions. GitHub is also needed for integration with [singularity-hub.org](Singularity Hub). In order for Singularity Hub to see the repos from *CHPC-UofU*, we had to allow *Third-party application access* to the organization via *CHPC-UofU*-*Settings*-*Third-party access*.
 
-For container definitions, we mirror the GitHub repositories to GitLab's *Singularity* group
+For container definitions, we also use the GitHub repositories to GitLab's *Singularity* group. The original though was for GitLab to automatically mirror the GitHub, but, this feature is only available in GitHub EE. Therefore, instead, we overload each local repository origin with two remotes, as described [https://steveperkins.com/migrating-projects-from-github-to-gitlab/](here).
 
-Each container will have its own repository on GitHub's *CHPC-UofU* organization page, and on GitLab *Singularity* group page.
+Each container will thus have its own repository on GitHub's *CHPC-UofU* organization page, and on GitLab *Singularity* group page.
+
+### GIT setup
+
+#### GitHub
+- create github.com account if you don't have one by navigating web browser to github.com
+- e-mail Martin to be added to the *CHPC-UofU* organization
+- create SSH keys for passwordless access to github.com, as described [https://help.github.com/articles/connecting-to-github-with-ssh/](here)
+
+#### GitLab
+- open gitlab.chpc.utah.edu in your web browser and authenticate with uNID
+- create SSH keys by going to your user settings (pulldown menu accessed via use icon in the upper right corner), then choosing *SSH k=Keys* and following the instructions.
 
 ### Files in container repository
 
@@ -22,34 +33,60 @@ Once we have our container files together, and the container builds OK, we can i
 
 1. Create a local repository. 
  - make sure that there's only one container per repository
- - use .gitignore from existing repos as a start for local .gitignore - at the very least include there *.img to ignore the container image files
+ - use `.gitignore` from existing repos as a start for local .gitignore - at the very least include there *.img to ignore the container image files
+ - for integration with Singularity Hub, name the container definition file `Singularity`
  - then run the following commands:
- -- git init
- -- git add .
- -- git commit -m "initial commit"
+```
+ git init
+ git add .
+ git commit -m "initial commit"
+```
 
 2. Create a remote GitHub repository and put the local repo to it
  - go to github.com, select CHPC-UofU as organization, create new repo under this organization (can't figure out how to do this via a command line)
- - run the following commands
- -- git remote add origin https://USER@github.com/CHPC-UofU/Singularity-REPO.git
- - USER is your GitHub user name, Singularity-REPO.git is the repo name
+ - run the following command:
+```
+ git remote add origin https://USER@github.com/CHPC-UofU/Singularity-REPO.git
+```
+ - Singularity-REPO.git is the repo name
 
-3. Create gitlab repository and add it to your local repos
+3. Create GitLab repository and add it to the local repo
+ - if haven't already, set up SSH keys on gitlab
  - go to gitlab.chpc.utah.edu, go to Singularity group, and there create a new repo.
  - add gitlab remote to the local repo 
- -- git remote set-url --add origin git@gitlab.chpc.utah.edu:Singularity/Singularity-REPO.git
- - USER is your gitlab user name, Singularity-REPO.git is the repo name
+```
+ git remote set-url --add origin git@gitlab.chpc.utah.edu:Singularity/Singularity-REPO.git
+```
+ - Singularity-REPO.git is the repo name
 
-4. Push the image 
- -- git push -u origin master
+3. Push the image 
+```
+ git push -u origin master
+```
 
-3. Mirror this repo to CHPC GitLab
- - log in to gitlab.chpc.utah.edu with your uNID and campus password
- - if haven't already, set up SSH keys on gitlab
- - select "Singularity" group and and in this group create a new project
- - choose to import, 
- - at first time, it'll ask for token to access github - generate it and paste to the gitlab page
- - select the appropriate repo from github to import
- - make sure in the "To GitLab" column, "Singularity" is selected (default is your uNID), then hit Import
+
+
+### Some tips/tricks
+
+#### To selectively add initial files:
+`ls -1 > files`
+vi files to edit
+`git add \`cat files\``
+
+#### Modifying a container repo
+```
+git clone git@github.com:CHPC-UofU/Singularity-tensorflow.git
+cd Singularity-tensorflow/
+cp ../.gitignore .
+
+# do your modifications, e.g.
+mv Singularity.def Singularity
+git rm --cached Singularity.def
+
+git remote set-url --add origin  git@gitlab.chpc.utah.edu:Singularity/Singularity-tensorflow.git
+git add .
+git commit -m "add gitlab"
+git push -u origin master
+```
 
 
