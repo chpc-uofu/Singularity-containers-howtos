@@ -68,9 +68,11 @@ Once we have our container files together, and the container builds OK, we can i
 ### Some tips/tricks
 
 #### To selectively add initial files:
-`ls -1 > files`
-vi files to edit
-`git add `cat files` `
+```
+ls -1 > files
+edit files to remove what's not needed
+git add `cat files` 
+```
 
 #### Modifying a container repo
 ```
