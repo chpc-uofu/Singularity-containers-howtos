@@ -23,7 +23,7 @@ and then bootstrap (install) the OS, and other needed programs:
 ```
 sudo singularity bootstrap ubuntu_$imgname.img ubuntu_$imgname.def
 ```
-I prefer to have a script, called [`build_container.sh`](https://github.com/mcuma/chpc_singularity/blob/master/seqlinkage/build_container.sh) that calls these two commands.
+I prefer to have a script, called [`build_container.sh`](https://github.com/CHPC-UofU/Singularity-ubuntu-python/blob/master/build_container_23.sh) that calls these two commands.
 
 The container definition file describes the bootstrap process, described [here](http://singularity.lbl.gov/bootstrap-image). 
 
