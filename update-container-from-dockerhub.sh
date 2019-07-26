@@ -5,7 +5,6 @@
 # if this script is started while another one is running (in the same directory), this new script
 # will wait till the first script creates the sif container
 
-set -x 
 if [ "$#" -ne 2 ]; then
   echo "Invalid number of parameters. Usage:"
   echo "update-container-from-dockerhub.sh <DockerHub container name> <sif file name>"
