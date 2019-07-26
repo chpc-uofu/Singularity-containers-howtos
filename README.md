@@ -25,6 +25,8 @@ Note that the default build will create a [squashfs](https://en.wikipedia.org/wi
 Singularity's [build help page](http://singularity.lbl.gov/docs-build-container) describes well the different build options and their use.
 
 I prefer to have a script, called [`build_container.sh`](https://github.com/mcuma/chpc_singularity/blob/master/seqlinkage/build_container.sh) that calls these two commands.
+=======
+I prefer to have a script, called [`build_container.sh`](https://github.com/CHPC-UofU/Singularity-ubuntu-python/blob/master/build_container_23.sh) that calls these two commands.
 
 The container definition file describes the bootstrap process, described [here](http://singularity.lbl.gov/bootstrap-image). 
 
@@ -39,7 +41,7 @@ To launch a shell in the new image, `sudo singularity shell -w -s /bin/bash myim
 
 Once the application in the container is installed, and the scriptlet in the def file to do this installation is written, build the container again. If there's an error, fix it and iterate over, until the container builds with no error.
 
-If install files need to be brought in from the host OS, including files that need to be downloaded interactively (e.g. CUDA installer) use the `%setup` section, which runs on the host. To put files in the container, use `${SINGULARITY_ROOTFS}`. E.g. to put files to container's `/usr/local`, put it to `${SINGULARITY_ROOTFS}/usr/local`. Example of this is [our tensorflow def file](https://github.com/mcuma/chpc_singularity/blob/master/tensorflow/ubuntu16-tensorflow-1.0.1-gpu.def).
+If install files need to be brought in from the host OS, including files that need to be downloaded interactively (e.g. CUDA installer) use the `%setup` section, which runs on the host. To put files in the container, use `${SINGULARITY_ROOTFS}`. E.g. to put files to container's `/usr/local`, put it to `${SINGULARITY_ROOTFS}/usr/local`. Example of this is [our tensorflow def file](https://github.com/CHPC-UofU/Singularity-tensorflow/blob/master/Singularity).
 
 To test the installation, use the `%test` section to put there commands that run tests.
 
@@ -60,7 +62,7 @@ To test the installation, use the `%test` section to put there commands that run
     useradd -m brewuser
     su -c 'brew install freetype --build-from-source' brewuser
 ```
-See [our bioBakery def file]() for full definition file that shows this.
+See [our bioBakery def file](https://github.com/CHPC-UofU/Singularity-bioBakery/blob/master/Singularity) for full definition file that shows this.
 - if any of the bootstrap commands exits with non-zero status, container build will terminate. While this is good to catch build issues, sometimes we want to ignore known errors. The simplest way to set exit status to zero is to pipe it to `true`, e.g. to overcome a known LinuxBrew error where the first update fails:
 ```
 /opt/linuxbrew/bin/brew update || true ; /opt/linuxbrew/bin/brew update 
@@ -73,7 +75,7 @@ if env | grep -q proxy; then env | grep proxy; fi
 ### A few caveats that I found
 - `%test` section does not seem to bring environment from /environment created in `%post` section, so, make sure to define PATH and LD_LIBRARY_PATH in the `%test` section before running tests.
 - the `%post` section starts at `/` directory, so, cd to some other directory (e.g. `/root`) before building programs.
-- to support NVidia GPUs in the container, one needs to instal a few NVidia driver libraries of the same version as the host driver. To find the version, run `rpm -qa | grep nvidia`. Then either follow [our tensorflow def file](https://github.com/mcuma/chpc_singularity/blob/master/tensorflow/ubuntu16-tensorflow-1.0.1-gpu.def) or bring libcuda.so and libnvidia-fatbinaryloader.so from the host.
+- to support NVidia GPUs in the container, one needs to instal a few NVidia driver libraries of the same version as the host driver. To find the version, run `rpm -qa | grep nvidia`. Then either follow [our tensorflow def file](https://github.com/CHPC-UofU/Singularity-bioBakery/blob/master/Singularity) or bring libcuda.so and libnvidia-fatbinaryloader.so from the host.
 - to support InfiniBand, need to install the IB driver stack in the container and make sure the driver sos are in the LD_LIBRARY_PATH (see the ubuntu_mpi container recipe for details).
 - Singularity container inherits the environment from the host shell, including PATH. One needs to be aware of this when setting things up. E.g. starting the container from a fairly clean environment may be a good idea. The only thing that it does not inherit are
  -- LD_LIBRARY_PATH
@@ -135,14 +137,14 @@ fi
 ```
 - the container needs to be started with binding the sys branch, i.e. with `-B /uufs/chpc.utah.edu`
 
-For example of container that has the LMod support built in, see [Ubuntu Python container](https://github.com/mcuma/chpc_singularity/tree/master/ubuntu_python).
+For example of container that has the LMod support built in, see [Ubuntu Python container](https://github.com/CHPC-UofU/Singularity-ubuntu-python).
 
 ## Deploying the container
 
 - copy the definition file and other potential needed files to the srcdir 
 - copy the container image (img file) to installdir
-- create module file that wraps the package call through the container, for example see [SEQLinkage module file](https://github.com/mcuma/chpc_singularity/blob/master/seqlinkage/1.0.0.lua).
-- create SLURM batch script example, for example see [SEQLinkage batch script]/(https://github.com/mcuma/chpc_singularity/blob/master/seqlinkage/run_seqlink.slr)
+- create module file that wraps the package call through the container, for example see [SEQLinkage module file](https://github.com/CHPC-UofU/Singularity-SEQLinkage/blob/master/1.0.0.lua).
+- create SLURM batch script example, for example see [SEQLinkage batch script]/(https://github.com/CHPC-UofU/Singularity-SEQLinkage/blob/master/run_seqlink.slr)
 -- NOTE that LMod does not expand alias correctly in bash non-interactive shell, so, use tcsh for the SLURM batch scripts until this is resolved
 
 
