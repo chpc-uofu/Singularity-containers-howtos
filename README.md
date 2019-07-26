@@ -15,14 +15,15 @@ Local changes done by hpcapps:
 
 ### Basic info
 
-To create a container, one needs to first create the image:
+To create a container, as of version 2.4, use the "build" command:
 ```
-sudo singularity create --size 4096 ubuntu_$imgname.img
+sudo singularity build ubuntu_$imgname.img ubuntu_$imgname.def
 ```
-and then bootstrap (install) the OS, and other needed programs:
-```
-sudo singularity bootstrap ubuntu_$imgname.img ubuntu_$imgname.def
-```
+
+Note that the default build will create a [squashfs](https://en.wikipedia.org/wiki/SquashFS) image, which is not writable. For development of a container, use either `--writable` or `--sandbox` option. `--writable` will make a single image file which is writable. That's good for moving containers around, but, not it takes longer to build. `--sandbox` will create a directory that contains the whole container. This is quick to create, and one can either modify the container files directly, or, by shelling into it with `-w` option. Note, though, that this directory is owned by root and as such not changable by your normal user.
+
+Singularity's [build help page](http://singularity.lbl.gov/docs-build-container) describes well the different build options and their use.
+
 I prefer to have a script, called [`build_container.sh`](https://github.com/mcuma/chpc_singularity/blob/master/seqlinkage/build_container.sh) that calls these two commands.
 
 The container definition file describes the bootstrap process, described [here](http://singularity.lbl.gov/bootstrap-image). 
@@ -32,7 +33,7 @@ To create a new container, the easiest is to get one of the definition files and
 Effort should be made to make the container building non-interactive, so they can be automatically rebuilt. Singularity developers also encourage doing everything from the def file, rather than launching `singularity exec` to add stuff to the container. 
 
 ### Container build strategy
-The strategy that I found works reasonably well is to bootstrap the base OS image, `singularity shell` into the container and then manually execute commands to build the particular package, while writing them down in a shell script. Oftentimes the packages have some kinds of shell scripts that install dependencies, and the program itself. Though, it can take time to iterate over and fix issues, mostly related to missing dependencies. Once things work, paste commands from this shell script as a scriptlet to the `%post` section of the def file. 
+The strategy that I found works reasonably well is to build the base OS image, `singularity shell` into the container and then manually execute commands to build the particular package, while writing them down in a shell script. Oftentimes the packages have some kinds of shell scripts that install dependencies, and the program itself. Though, it can take time to iterate over and fix issues, mostly related to missing dependencies. Once things work, paste commands from this shell script as a scriptlet to the `%post` section of the def file. 
 
 To launch a shell in the new image, `sudo singularity shell -w -s /bin/bash myimage.img`, `-w` makes the image writeable, `-s` makes shell bash (easier to use than default sh). In the container, use `apt-get` or `yum` to install the required dependencies (when something is missing, google what package contains it), and finally `wget` the install files for the program, or download them to a local directory, and add `-B `pwd`:/mnt` to the `singularity shell` command to mount the local directory under `/mnt` in the container.
 
@@ -48,7 +49,7 @@ To test the installation, use the `%test` section to put there commands that run
     mkdir /uufs
     mkdir /scratch
 ```
-- additions to default environment (PATH, LD_LIBRARY_PATH) can be put to /environment file in the container, e.g.
+- additions to default environment (PATH, LD_LIBRARY_PATH) can be put to /environment file in the container, or use the %environment section e.g.
 ``` echo "
     PATH=my_new_path:\$PATH
     export PATH
@@ -78,6 +79,10 @@ if env | grep -q proxy; then env | grep proxy; fi
  -- LD_LIBRARY_PATH
  -- shell functions (e.g. LMod defines its commands via shell functions)
 - supporting modules (LMod) requires separate LMod installation for Ubuntu based containers and a few other modifications, detailed below
+- the %runscript section by default uses `/bin/sh` as the shell interpreter. There does not seem to be a way to change that, except for replacing the interpreter after the container is built by:
+```
+sudo singularity exec -w sed -i -e 's/bin\/sh/bin\/bash/g' /.singularity.d/runscript
+```
 
 ## Running the container
 
