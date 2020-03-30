@@ -86,6 +86,48 @@ if env | grep -q proxy; then env | grep proxy; fi
 sudo singularity exec -w sed -i -e 's/bin\/sh/bin\/bash/g' /.singularity.d/runscript
 ```
 
+### Using sylabs.io remote builder
+
+#### Create an account and get token for use with CLI
+
+Go to [https://cloud.sylabs.io/home](https://cloud.sylabs.io/home), click Remote Builder, then click Sign in to Sylabs and create an account. I created one that linked to my GitHub account. 
+
+Then on the [Builder webpage](https://cloud.sylabs.io/builder), get the Sylabs cloud token and install it to your `~/.singularity/sylabs-token`.
+
+#### Building container using remote builder
+
+After getting the Sylabs cloud token to the right place, it's as easy as running `singularity build --remote alpine.sif Singularity`, assuming the `Singularity` example file is:
+```
+Bootstrap: docker
+From: alpine:3.9
+%post
+apk update
+apk upgrade
+apk add bash
+```
+The container will be built on the Sylabs cloud, and copied to the directory from where the command was run.
+
+The container will also stay on the Sylabs cloud, accessible via the [Library](https://cloud.sylabs.io/library).
+
+#### Signing containers
+
+Signing containers allows to store PGP keys in the container for verification.
+
+To generate PGP keys, we follow the [Signing your own containers](https://sylabs.io/guides/3.5/user-guide/signNverify.html#signing-your-own-containers) help page. First generate the key, `singularity key newpair`. If the Sylabs cloud token has been installed, the PGP key should be pushed to it, which should be shown by:
+```
+Would you like to push it to the keystore? [Y,n] Y
+Generating Entity and OpenPGP Key Pair... done
+Key successfully pushed to: https://keys.sylabs.io
+```
+
+Once the key is created, one can locally sign and verify the container, e.g.:
+```
+$ singularity sign alpine.sif 
+$ singularity verify alpine.sif
+```
+
+It appears that the free version of Sylabs cloud does not sign the containers automatically, though, as when building the container remotely, we get `WARNING: Skipping container verifying ` during the remote build. I suspect this may be part of the paid Singularity Pro subscription.
+
 ## Running the container
 
 Singularity container is an executable so it can be run as is (which launches whatever is in `%runscript` section), or with `singularity exec` followed by the command within container, e.g.:
