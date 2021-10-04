@@ -24,8 +24,6 @@ Note that the default build will create a [squashfs](https://en.wikipedia.org/wi
 
 Singularity's [build help page](http://singularity.lbl.gov/docs-build-container) describes well the different build options and their use.
 
-I prefer to have a script, called [`build_container.sh`](https://github.com/mcuma/chpc_singularity/blob/master/seqlinkage/build_container.sh) that calls these two commands.
-=======
 I prefer to have a script, called [`build_container.sh`](https://github.com/CHPC-UofU/Singularity-ubuntu-python/blob/master/build_container_23.sh) that calls these two commands.
 
 The container definition file describes the bootstrap process, described [here](http://singularity.lbl.gov/bootstrap-image). 
