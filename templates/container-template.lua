@@ -21,21 +21,23 @@ whatis("Installed by : your name")
 
 -- do not modify anything below this line
 depends_on("singularity")
+
+local run_shell = 'singularity shell -s /bin/bash ' .. CONTAINER
+local run_function = 'singularity exec ' .. CONTAINER .. " " 
 -- set shell access to the container with "containerShell" command
-set_shell_function("containerShell",'singularity shell -s /bin/bash ' .. CONTAINER,"singularity shell -s /bin/bash " .. CONTAINER)
+set_shell_function("containerShell",run_shell,run_shell)
 
 -- loop over COMMANDS array to create the shell functions
-for ic in pairs(COMMANDS) do
-  set_shell_function(COMMANDS[ic],'singularity exec ' .. CONTAINER .. " " .. COMMANDS[ic] .. " " .. "$@","singularity exec " .. CONTAINER .. " " .. COMMANDS[ic] .. " " .. "$*")
+for ic,program in pairs(COMMANDS) do
+  set_shell_function(program, run_function .. program .. " $@",run_function .. program .. " $*")
 end
 
 -- to export the shell function to a subshell
 if (myShellName() == "bash") then
   execute{cmd="export -f containerShell",modeA={"load"}}
-  -- loop over the array of commands
-  for ic in pairs(COMMANDS) do
-    execute{cmd="export -f " .. COMMANDS[ic],modeA={"load"}}
-  end
+  execute{cmd="export -f " .. table.concat(COMMANDS, " "),modeA={"load"}}
+  execute{cmd="unset -f containerShell",modeA={"unload"}}
+  execute{cmd="unset -f " .. table.concat(COMMANDS, " "),modeA={"unload"}}
 end
 
 
