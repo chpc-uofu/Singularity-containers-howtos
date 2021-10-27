@@ -10,6 +10,8 @@ Any help you want to display when running "module help module-name"
 local CONTAINER="/uufs/chpc.utah.edu/common/home/u0123456/containers/mycontainer.sif"
 -- text array of commands to alias from the container
 local COMMANDS = {"command1","command2","command3"}
+-- set to true if the container requires GPU(s)
+local GPU = false
 
 -- these optional lines provide more information about the program in this module file
 whatis("Name         : program-name")
@@ -22,8 +24,15 @@ whatis("Installed by : your name")
 -- do not modify anything below this line
 depends_on("singularity")
 
-local run_shell = 'singularity shell -s /bin/bash ' .. CONTAINER
-local run_function = 'singularity exec ' .. CONTAINER .. " " 
+if GPU then
+  nvswitch = '--nv '
+  add_property("arch","gpu")
+else
+  nvswitch = ''
+end
+
+local run_shell = 'singularity shell ' .. nvswitch .. '-s /bin/bash ' .. CONTAINER
+local run_function = 'singularity exec ' .. nvswitch .. CONTAINER .. " " 
 -- set shell access to the container with "containerShell" command
 set_shell_function("containerShell",run_shell,run_shell)
 
