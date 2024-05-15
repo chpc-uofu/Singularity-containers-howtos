@@ -22,17 +22,19 @@ whatis("Installed on : xx/xx/20xx")
 whatis("Installed by : your name")
 
 -- do not modify anything below this line
-depends_on("singularity")
+depends_on("apptainer")
 
 if GPU then
   nvswitch = '--nv '
+  setenv("APPTAINER_NV","true")
   add_property("arch","gpu")
 else
   nvswitch = ''
 end
 
 local run_shell = 'singularity shell ' .. nvswitch .. '-s /bin/bash ' .. CONTAINER
-local run_function = 'singularity exec ' .. nvswitch .. CONTAINER .. " " 
+-- container is executable, so can run as "container.sif command"
+local run_function = CONTAINER .. " " 
 -- set shell access to the container with "containerShell" command
 set_shell_function("containerShell",run_shell,run_shell)
 
@@ -45,8 +47,9 @@ end
 if (myShellName() == "bash") then
   execute{cmd="export -f containerShell",modeA={"load"}}
   execute{cmd="export -f " .. table.concat(COMMANDS, " "),modeA={"load"}}
-  execute{cmd="unset -f containerShell",modeA={"unload"}}
-  execute{cmd="unset -f " .. table.concat(COMMANDS, " "),modeA={"unload"}}
+-- newer Lmod unsets this automatically upon unload
+-- execute{cmd="unset -f containerShell",modeA={"unload"}}
+-- execute{cmd="unset -f " .. table.concat(COMMANDS, " "),modeA={"unload"}}
 end
 
 
